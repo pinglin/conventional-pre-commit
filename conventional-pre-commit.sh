@@ -3,14 +3,14 @@
 # list of Conventional Commits types
 cc_types="feat fix"
 default_types="build chore ci docs $cc_types perf refactor revert style test"
-types=( $cc_types )
+IFS=' ' read -r -a types <<< "$cc_types"
 
-if [ $# -eq 1 ]; then
-    types=( $default_types )
+if [ $# -eq 1 ]; then    
+    IFS=' ' read -r -a types <<< "$default_types"
 else
     # assume all args but the last are types
     while [ $# -gt 1 ]; do
-        types+=( $1 )
+        types+=( "$1" )
         shift
     done
 fi
@@ -25,17 +25,16 @@ r_scope="(\([\w \/-]+\))?"
 # optional breaking change indicator and colon delimiter
 r_delim='!?:'
 # subject line, body, footer
-r_subject=" [\w][\s\S]+"
+r_subject=" ([[:alnum:]]|[[:space:]]|[[:punct:]])+"
 # the full regex pattern
 pattern="^$r_types$r_scope$r_delim$r_subject$"
 
 # check commit message
-if ! ggrep -Pq "$pattern" "$msg_file"; then
-    echo "[Commit message] $( cat $msg_file )"
+if ! grep -Eq "$pattern" "$msg_file"; then
+    echo "[Commit message] $( cat "$msg_file" )"
     echo "
 Your commit message does not follow Conventional Commits formatting
 https://www.conventionalcommits.org/
-
 
 Conventional Commits start with one of the below types, followed by a colon,
 followed by the commit message:
