@@ -30,7 +30,7 @@ r_subject=" [\w][\s\S]+"
 pattern="^$r_types$r_scope$r_delim$r_subject$"
 
 # check commit message
-if ! grep -Pq "$pattern" "$msg_file"; then
+if ! grep -Eq "$pattern" "$msg_file"; then
     echo "[Commit message] $( cat $msg_file )"
     echo "
 Your commit message does not follow Conventional Commits formatting
